@@ -1,0 +1,36 @@
+# Ignore data files and datasets completely
+[Dd]ata/
+*.csv
+*.zip
+*.json
+*.xlsx
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ignore Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$*.py
+*.elc
+.pytest_cache/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Ignore IDE and editor configurations (VS Code)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
