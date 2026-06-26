@@ -29,7 +29,6 @@ def plot_distribution(df, output_path="transaction_distribution.png"):
     sns.set_theme(style="whitegrid")
     plt.figure(figsize=(7, 5))
     
-    # Fixed warning by assigning x to hue and setting legend=False
     ax = sns.countplot(x='Class', data=df, hue='Class', palette=['#4A90E2', '#D0021B'], legend=False)
     plt.title('Distribution of Transactions (Genuine vs. Fraud)', fontsize=13, fontweight='bold', pad=15)
     plt.xlabel('Class (0: Genuine | 1: Fraud)', fontsize=11)
@@ -56,14 +55,11 @@ def analyze_transaction_amounts(df, output_path="amount_distribution.png"):
     print("\nFraudulent Transactions (Class 1):")
     print(df[df['Class'] == 1]['Amount'].describe())
     
-    # Generate boxplot to visualize outliers and distribution differences
     plt.figure(figsize=(8, 6))
     sns.boxplot(x='Class', y='Amount', data=df, hue='Class', palette=['#4A90E2', '#D0021B'], legend=False)
     plt.title('Transaction Amount Distribution by Class', fontsize=13, fontweight='bold', pad=15)
     plt.xlabel('Class (0: Genuine | 1: Fraud)', fontsize=11)
     plt.ylabel('Amount ($)', fontsize=11)
-    
-    # Limit y-axis slightly to see the box structures clearly due to high outliers
     plt.yscale('log')
     
     plt.tight_layout()
@@ -71,8 +67,33 @@ def analyze_transaction_amounts(df, output_path="amount_distribution.png"):
     plt.close()
     print(f"\nAmount distribution plot saved to {output_path}")
 
+def analyze_correlations(df, output_path="feature_correlation.png"):
+    """Calculates feature correlations with the Class variable and saves a heatmap."""
+    print("\n--- Feature Correlation with Target (Class) ---")
+    
+    corr_matrix = df.corr()
+    correlations = corr_matrix['Class'].sort_values(ascending=False)
+    
+    print("\nTop 5 Positively Correlated Features with Fraud:")
+    print(correlations.iloc[1:6])  
+    
+    print("\nTop 5 Negatively Correlated Features with Fraud:")
+    print(correlations.tail(5))
+    
+    top_pos = correlations.index[1:6]
+    top_neg = correlations.tail(5).index
+    top_features = list(top_pos) + list(top_neg) + ['Class']
+    top_features = list(set(top_features))
+    
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(df[top_features].corr(), annot=True, fmt=".2f", cmap="coolwarm", center=0, linewidths=0.5)
+    plt.title('Correlation Matrix of Highly Correlated Features', fontsize=12, fontweight='bold', pad=15)
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+    print(f"\nCorrelation heatmap saved to {output_path}")
+
 if __name__ == "__main__":
-    # Check current working directory to resolve relative pathing dynamically
     if os.path.basename(os.getcwd()) == "notebooks":
         dataset_path = "../data/creditcard.csv"
     else:
@@ -83,6 +104,7 @@ if __name__ == "__main__":
         analyze_class_imbalance(data)
         plot_distribution(data)
         analyze_transaction_amounts(data)
+        analyze_correlations(data)
         
     except Exception as e:
         print(e)
